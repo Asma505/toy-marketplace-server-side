@@ -28,17 +28,19 @@ async function run() {
 
     const productsCollection = client.db('sports').collection('products');
 
-    app.get('/products', async(req, res)=>{
-        const cursor = productsCollection.find();
-        const result = await cursor.toArray();
-        res.send(result);
+    app.get('/products', async (req, res) => {
+      console.log(req.query);
+      const limit = parseInt(req.query.limit) || 20;
+      const cursor = productsCollection.find();
+      const result = await cursor.limit(limit).toArray();
+      res.send(result);
     })
 
-    app.get('/products/:id', async(req, res)=>{
-        const id = req.params.id;
-        const query = {_id: new ObjectId(id)};
-        const result = await productsCollection.findOne(query);
-        res.send(result);
+    app.get('/products/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await productsCollection.findOne(query);
+      res.send(result);
     })
 
     // Send a ping to confirm a successful connection
@@ -52,10 +54,10 @@ async function run() {
 run().catch(console.dir);
 
 
-app.get('/', (req, res)=>{
-    res.send('toy marketplace server is running')
+app.get('/', (req, res) => {
+  res.send('toy marketplace server is running')
 })
 
-app.listen(port, ()=>{
-    console.log(`server is running on port: ${port}`)
+app.listen(port, () => {
+  console.log(`server is running on port: ${port}`)
 })
