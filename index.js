@@ -44,6 +44,16 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/toy', async(req, res)=>{
+      const result = await productsCollection.find().sort({"price":1}).toArray();
+      res.send(result);
+    })
+    
+    app.get('/toys', async(req, res)=>{
+      const result = await productsCollection.find().sort({"price":-1}).toArray();
+      res.send(result);
+    })
+
     
     app.post('/products', async (req, res) => {
       const newToy = req.body;
