@@ -28,27 +28,56 @@ async function run() {
 
     const productsCollection = client.db('sports').collection('products');
 
+    
     app.get('/products', async (req, res) => {
       console.log(req.query);
       const limit = parseInt(req.query.limit) || 20;
       const cursor = productsCollection.find();
       const result = await cursor.limit(limit).toArray();
       res.send(result);
-    })
+    })    
 
     app.get('/products/:id', async (req, res) => {
-      const id = req.params.id;
+      const id = req.params.id;      
       const query = { _id: new ObjectId(id) };
       const result = await productsCollection.findOne(query);
       res.send(result);
     })
 
-    app.post('/products', async(req, res)=>{
+    
+    app.post('/products', async (req, res) => {
       const newToy = req.body;
       console.log(newToy);
       const result = await productsCollection.insertOne(newToy);
       res.send(result);
     })
+
+    app.put('/products/:id', async(req, res)=>{
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const options = {upsert: true};
+      const updatedToy = req.body;
+      const toy = {
+        $set: {
+          description: updatedToy.description, 
+          price: updatedToy.price, 
+          available_quantity: updatedToy.available_quantity
+        }
+      }
+
+      const result = await productsCollection.updateOne(filter, toy, options);
+      res.send(result);
+
+    })
+
+    app.delete('/products/:id', async(req, res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await productsCollection.deleteOne(query);
+      res.send(result);
+    })
+
+    
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
